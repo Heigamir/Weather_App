@@ -2,10 +2,12 @@ package com.example.weatherapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,12 +26,11 @@ import org.json.JSONObject;
 import java.text.DecimalFormat;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
+
     EditText etCity, etCountry;
     TextView tvResult;
-    private final String url ="http://api.openweathermap.org/data/2.5/weather";
-    private final String appid ="722071a67f8e95f7afe8c28b3f625652";
-    private final String urlForecast ="http://api.openweathermap.org/data/2.5/forecast";
-    DecimalFormat df = new DecimalFormat("#.##");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,28 +39,48 @@ public class MainActivity extends AppCompatActivity {
         etCity = findViewById(R.id.etCity);
         etCountry = findViewById(R.id.etCountry);
         tvResult = findViewById(R.id.tvResult);
+        Variables test = ((Variables) this.getApplication());
+
+        Button btnNavToFavorites = (Button) findViewById(R.id.btnGo);
+        Button btnAddToFavorites = (Button) findViewById(R.id.btnAdd);
+
+        btnNavToFavorites.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, Favorites.class);
+                startActivity(intent);
+            }
+        });
+
+        btnAddToFavorites.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                String city=etCity.getText().toString().trim();
+                test.setData(city);
+                Toast.makeText(MainActivity.this, "Dodano do ulubionych: " + city, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void getWeatherDetails(View view) {
         String tempUrl = "";
-        String tempUrlForecast = "";
         String city=etCity.getText().toString().trim();
         String country= etCountry.getText().toString().trim();
         if (city.equals("")){
             tvResult.setText("Pole miasto nie może być pustę!");
         }else {
             if(!country.equals("")){
-                tempUrl=url + "?q=" + city + "," + country + "&appid=" + appid;
-                tempUrlForecast=url + "?q=" + city + "," + country + "&appid=" + appid;
+                tempUrl=Variables.url + "?q=" + city + "," + country + "&lang=pl&appid=" + Variables.appid;
             }else{
-                tempUrl=url + "?q=" + city + "&appid=" + appid;
-                tempUrlForecast=url + "?q=" + city + "&appid=" + appid;
+                tempUrl=Variables.url + "?q=" + city + "&lang=pl&appid=" + Variables.appid;
             }
             //Aktualna pogoda
             StringRequest stringRequest = new StringRequest(Request.Method.POST, tempUrl, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
-                    //Log.d("response",response);
+                    Log.d("response",response);
                     String output="";
                     try {
                         JSONObject jsonResponse = new JSONObject(response);
@@ -82,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
                         tvResult.setTextColor(Color.rgb(255,255,255));
 
                         output +=" Aktualna Temperatura w " +cityName + " (" + countryName + ")"
-                                + "\n Temperatura: " + df.format(temp) + " °C"
-                                + "\n Temperatura odczuwalna: " + df.format(feelsLike) + " °C"
+                                + "\n Temperatura: " + Variables.df.format(temp) + " °C"
+                                + "\n Temperatura odczuwalna: " + Variables.df.format(feelsLike) + " °C"
                                 + "\n Wilgotność powietrza: " + humidity + "%"
                                 + "\n Opis: " + description
                                 + "\n Prędkość wiatru: " + wind + " m/s"
@@ -103,23 +124,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
 
-            //Prognoza pogody
-            StringRequest stringRequestForecast = new StringRequest(Request.Method.POST, tempUrlForecast, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.d("response", response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getApplicationContext(), error.toString().trim(),Toast.LENGTH_SHORT).show();
-                }
-            });
 
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
             requestQueue.add(stringRequest);
-            RequestQueue requestQueueForecast = Volley.newRequestQueue(getApplicationContext());
-            requestQueueForecast.add(stringRequestForecast);
         }
+    }
+
+    public void addToFavorite(View view) {
     }
 }

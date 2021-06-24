@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        android:text="Usuń z Ulubionych"
+        />
+
+
+    <Button
+        android:id="@+id/btnGoMain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:background="#0070c7"
+        android:onClick="goToMain"
+        android:text="Przejdź do Strony Głównej"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@null" />
+
+    <ListView
+        android:id="@+id/List"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnGo"
+        android:layout_marginBottom="10dp"
+        android:background="#0070c7"
+        android:text="Przejdź do ulubionych"
+        android:textColor="@android:color/white"
+        app:backgroundTint="@null" />
+
+
+</LinearLayout>
